@@ -39,9 +39,6 @@ namespace FacilityScanner
         {
             RoleCounts counts = new RoleCounts();
             
-            if (Player.ConnectedCount > _config.ScanMaxPlayerCount) 
-                return counts;
-            
             foreach (Player player in Player.List.Where(p => p.IsAlive))
             {
                 if (player.IsCHI)
