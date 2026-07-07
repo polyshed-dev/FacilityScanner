@@ -23,7 +23,7 @@ namespace FacilityScanner
                 return;
             
             SetUpString(sb, role, count);
-            Exiled.API.Features.Cassie.MessageTranslated($"{count} {cassieEnglishRoleName}",sb.ToString() , false, false, true);
+            Exiled.API.Features.Cassie.MessageTranslated($"{count} {cassieEnglishRoleName}",sb.ToString() , false, false);
         }
 
         public void AnnounceLocation(StringBuilder sb, string zone, int count, string cassieEnglish)
@@ -32,7 +32,7 @@ namespace FacilityScanner
                 return;
             
             SetUpString(sb, zone, count);
-            Exiled.API.Features.Cassie.MessageTranslated($"{count} in {cassieEnglish}",sb.ToString() , false, false, true);
+            Exiled.API.Features.Cassie.MessageTranslated($"{count} in {cassieEnglish}",sb.ToString() , false, false);
         }
         
         public RoleCounts GetRoleCounts()
