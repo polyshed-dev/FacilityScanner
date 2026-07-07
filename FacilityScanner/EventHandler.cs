@@ -1,99 +1,52 @@
-﻿
-
-using System.Linq;
-using System.Text;
-using Exiled.API.Enums;
-using PlayerRoles;
-using PluginAPI.Core;
-using Player = Exiled.API.Features.Player;
-using Cassie = Exiled.API.Features.Cassie;
+﻿using System.Text;
+using LabApi.Events.Arguments.ServerEvents;
+using MEC;
+using PluginAPI.Events;
 
 namespace FacilityScanner
 {
     public class EventHandler
     {
         private Config _config => Plugin.Instance.Config;
+        private Utils _utils;
         public EventHandler()
         {
-            
+            _utils = new Utils();
+            Exiled.Events.Handlers.Server.RoundStarted += OnRoundStart;
         }
 
         internal void UnregisterEvents()
         {
-            
-        }
-
-        public RoleCounts GetRoleCounts()
-        {
-            var counts = new RoleCounts();
-            
-            if (Player.ConnectedCount > _config.ScanMaxPlayerCount) 
-                return counts;
-            
-            foreach (Player player in Player.List.Where(p => p.IsAlive))
-            {
-                if (player.IsCHI)
-                    counts.countChaos++;
-                
-                if (player.IsNTF)
-                    counts.countNtf++;
-                
-                if (player.Role.Type == RoleTypeId.ClassD)
-                    counts.countDClass++;
-                
-                if (player.Role.Type == RoleTypeId.FacilityGuard)
-                    counts.countGuards++;
-                
-                if (player.Role.Type == RoleTypeId.Scientist)
-                    counts.countScientist++;
-                
-                if (player.IsScp)
-                    counts.countScp++;
-                
-                if (player.Zone == ZoneType.Entrance)
-                    counts.countEntrance++;
-                
-                if (player.Zone == ZoneType.Surface)
-                    counts.countSurface++;
-                
-                if (player.Zone == ZoneType.HeavyContainment)
-                    counts.countHeavy++;
-                
-                if (player.Zone == ZoneType.LightContainment)
-                    counts.countLight++;
-
-                return counts;
-            }
-            
-            return counts;
+            Exiled.Events.Handlers.Server.RoundStarted -= OnRoundStart;
+            _utils = null;
         }
 
         public void SendCassie()
         {
-            RoleCounts counts = GetRoleCounts();
-            
-            string ChaosCount =  counts.countChaos.ToString();
-            string NtfCount =  counts.countNtf.ToString();
-            string DClassCount =  counts.countDClass.ToString();
-            string GuardCount =  counts.countGuards.ToString();
-            string SciCount =  counts.countScientist.ToString();
-            
-            StringBuilder sbrp = new StringBuilder();
-            StringBuilder sbrs = new StringBuilder();
-
-            sbrp.Append();
-            
-            string HeavyCount =  counts.countHeavy.ToString();
-            string LightCount =  counts.countLight.ToString();
-            string EntranceCount =  counts.countEntrance.ToString();
-            string SurfaceCount =  counts.countSurface.ToString();
-            StringBuilder sbzc = new StringBuilder();
-            
             Exiled.API.Features.Cassie.MessageTranslated("Scanning facility", _config.ScanningFacility, false, false, true);
-            
+            RoleCounts counts = _utils.GetRoleCounts();
             Exiled.API.Features.Cassie.MessageTranslated("Scan complete", _config.ScanComplete, false, false, true);
+            Exiled.API.Features.Cassie.MessageTranslated("Detected", _config.Detected, false, false, true);
+            StringBuilder sb = new StringBuilder();
             
-            Exiled.API.Features.Cassie.MessageTranslated("Scan complete", _config.ScanComplete, false, false, true);
+            _utils.AnnounceCount(sb, _config.ClassD, counts.countDClass, "Class D personnel");
+            _utils.AnnounceCount(sb, _config.Scientist, counts.countScientist, "Science personnel");
+            _utils.AnnounceCount(sb, _config.FacilityGuard, counts.countGuards, "Facility guard");
+            _utils.AnnounceCount(sb, _config.Ntf, counts.countNtf, "Nine tailed fox");
+            _utils.AnnounceCount(sb, _config.ChaosInsurgency, counts.countChaos, "Chaos Insurgency");
+            _utils.AnnounceCount(sb, "<color=red>SCP</color>", counts.countScp, "SCP");
+            
+            Exiled.API.Features.Cassie.MessageTranslated("Parsing location", _config.ScanLocation, false, false, true);
+            
+            _utils.AnnounceLocation(sb, _config.Surface, counts.countSurface, "Surface zone");
+            _utils.AnnounceLocation(sb, _config.Entrance, counts.countEntrance, "Entrance zone");
+            _utils.AnnounceLocation(sb, _config.Heavy, counts.countHeavy, "Heavy containment zone");
+            _utils.AnnounceLocation(sb, _config.Light, counts.countLight, "Light containment zone");
+        }
+
+        public void OnRoundStart()
+        {
+            
         }
     }
 }

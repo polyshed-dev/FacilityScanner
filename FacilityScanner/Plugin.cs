@@ -13,7 +13,8 @@ namespace FacilityScanner
         public override Version RequiredExiledVersion { get; } = new Version(9, 14, 2);
 
         private EventHandler _handler;
-
+        private Utils _utils;
+        
         public override void OnEnabled()
         {
             base.OnEnabled();
