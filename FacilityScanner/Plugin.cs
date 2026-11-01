@@ -8,7 +8,7 @@ namespace FacilityScanner
         public static Plugin Instance {get; private set;}
         
         public override string Name { get; } = "FacilityScanner";
-        public override string  Author { get; } = "polyshed.";
+        public override string  Author { get; } = "polyshed";
         public override Version Version { get; } = new Version(0, 0, 1);
         public override Version RequiredExiledVersion { get; } = new Version(9, 14, 2);
 
